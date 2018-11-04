@@ -2,9 +2,11 @@
 
 ## Title: Blenduino
 
-Blender 3D is an open source 3D creation tool, and Arduino is an open source electronics prototyping platform. They should be friends! 
+Blender 3D is an open source 3D creation tool, and Arduino is an open source electronics prototyping platform. They should be friends!
+
 I aim to create 2 libraries - an arduino library and a blender add-on - that facilitate serial communication between the two platforms.
 Blender includes python scripting and can read serial, but the actual implementation of getting serial data into blender in a useful way can be clunky and not beginner friendly. I hope to create a way to easily bring physical data into blender, and send useful data out into the physical world.
+
 Whether you're looking to design a new 3D modelling interface, or experiment with animations involving real-time physical data, or anything in between, this system could be for you.
 
 
