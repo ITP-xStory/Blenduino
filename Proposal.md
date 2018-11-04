@@ -94,8 +94,9 @@ I think my two main technical challenges will be thinking through how data is st
 In terms of the latter, I'm not sure of anyone who has experience specifically with blender Addons, and it seems that there's enough documentation that the process will mostly involve rigorous research and reading the documentation.
 
 In terms of the former, pretty much anyone who has experience reliably sending/receiving data between two systems could be helpful to me. Luckily there's a vast pool of the very such people at ITP! Off the top of my head two (very busy) people I could learn a lot from are:
-- Shawn van Every (networking and data streaming seem a good match)
-- Tom Igoe (networking and connection to Arduino development)
+- Shawn van Every (ITP) - networking and data streaming 
+- Tom Igoe (ITP) - networking and connection to Arduino development
+- Michael Shiloh (NYUAD) - Arduino development and networking
 
 
 ## More about you
