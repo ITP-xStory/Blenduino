@@ -15,6 +15,7 @@ James Hosken
 ## Define the problem.
 
 _What is the current state of things? What issue do you wish to solve and why? Who is the audience?_
+
 Getting physical data into a 3D creation tool doesn't exactly solve a *problem*, but it does open up a lot of new possibilities. 
 In the current state of things, one can use Blender's python integration to read serial data from an arduino. In this case, however, one must be familiar with both arduino and python, and blender's specific python libraries, as well as how to get data from the python script into the 3D environment. All said that's a lot of barriers to entry.  
 Hopefully this proposed system will allow quick experimentation without having to know the intricacies of each stage of the process.
@@ -26,7 +27,7 @@ Potential use cases are:
 
 ## Address Greater Landscape
 
-_Please address how the open source project you are creating or contributing to fits into a greater field or tech landscape. Who has done similar work before? How are you building off this, and how? What sets your project apart from your colleagues?_
+_Please address how the open source project you are creating or contributing to fits into a greater field or tech landscape. Who has done similar work before? How are you building off this? What sets your project apart from your colleagues?_
 
 This system could be thought of as similar in concept to the Processing(/p5)/Arduino relationship, in that physical data can be sent from the Arduino to a more powerful processor so that something interesting can be done with it. The more powerful processor in this case is the Blender engine, which specialises in all things 3D. So, where in Processing/p5 the physical data coming in could alter parameters of your code, in this system the physical data coming in could alter parameters of objects in your 3D enivonment (PSR\*, light intensity, colour)
 
@@ -82,7 +83,7 @@ The code and development documentation will live on GitHub, and I'll post inform
 
 ## Accessibility
 
-I shall strive to follow WCAG in all documentation materials
+I shall strive to follow WCAG in all documentation materials.
 
 ## Mentoring
 
