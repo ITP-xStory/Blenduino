@@ -4,7 +4,6 @@ import threading
 
 ser = serial.Serial("COM4", 9600)
 
-
 def readSerialData():
 	while True:
 		print(ser.readline())
