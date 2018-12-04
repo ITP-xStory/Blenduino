@@ -1,3 +1,7 @@
+import serial
+import time
+import threading
+#from multiprocessing import Process	#Better than threading - but causes trouble with blender!
 import bpy
 
 # Meta information.
@@ -17,73 +21,20 @@ bl_info = {
 
  
 # Operation.
-class CreateSerial(bpy.types.Operator):
 
-	bl_idname = "object.create_serial"  # Access the class by bpy.ops.object.create_serial.
-	bl_label = "Start Serial"
-	bl_description = "Add Serial Object"
-	bl_options = {'REGISTER', 'UNDO'}
-	 
-	# Input property-------------------
-	# xyz vector values.：
+# class ReadSerialData(threading.Thread):
+#     """Thread class with a stop() method. The thread itself has to check
+#     regularly for the stopped() condition."""
 
-	
-	'''
-	#TEMPLATING
-	# Select box.
-	select_box = bpy.props.EnumProperty(
-		name = "Select box",
-		description = "Set select box",
-		# [(ID, name, description)]
-		items = [('3D_CURSOR', "3D cursor", "Locate on 3D cursor"),
-				('ORIGIN', "origin", "Locate on origin")]
-	)
-	# A check box.
-	check_box = bpy.props.BoolProperty(
-		name = "Check box",
-		description = "Set check box"
-	)
-	# xyz check box.
-	xyz_check_box = bpy.props.BoolVectorProperty(
-		name = "XYZ check box",
-		description = "Set XYZ check box",
-		default = [True, True, False],
-		subtype = "XYZ" # Set xyz check box
-	)
-	'''
-	# -----------------------------------------
- 
-	# Execute function.
-	def execute(self, context):
-		
-		#context.scene.[varname] to access vars from tool shelf.
+#     def __init__(self):
+#         super(StoppableThread, self).__init__()
+#         self._stop_event = threading.Event()
 
-		#self.[varname] to access vars from this class above.
-		'''
-		bpy.ops.mesh.primitive_ico_sphere_add()
-		active_obj = context.active_object
-		# Input before execute on the left tool shelf.
-		active_obj.scale = active_obj.scale * context.scene.float_input
-		# Input after execute on the left below panel.
-		active_obj.location = active_obj.location + self.float_vector_input # 
-		'''
-		bpy.context.user_preferences.themes[0].object.create_serial = (0,1,0)
-		print("Executed CreateSerial class")
-		return {'FINISHED'}
- 
+#     def stop(self):
+#         self._stop_event.set()
 
-class StopSerial(bpy.types.Operator):
-
-	bl_idname = "object.stop_serial"  # Access the class by bpy.ops.object.create_serial.
-	bl_label = "Stop Serial"
-	bl_description = "Close Serial Port"
-	bl_options = {'REGISTER', 'UNDO'}
-	 
-
-	def execute(self, context):
-		bpy.context.user_preferences.themes[0].object.create_serial = (1,0,0)
-		print("Executed Stop Serial class")
-		return {'FINISHED'}
+#     def stopped(self):
+#         return self._stop_event.is_set()
 
 
 class ToggleSerial(bpy.types.Operator):
@@ -92,18 +43,22 @@ class ToggleSerial(bpy.types.Operator):
 	bl_label = "Toggle Serial"
 	bl_description = "Toggle Serial Port"
 	bl_options = {'REGISTER', 'UNDO'}
-	 
+	
+
 
 	def execute(self, context):
 		scn = bpy.context.scene
-		
+
 		if(scn.isSerialConnected == False):
 			scn.isSerialConnected = True
 		else:
 			scn.isSerialConnected = False
 
 		print("Toggleing Serial class")
+		print(scn.isSerialConnected)
 		return {'FINISHED'}
+
+
 
 # Menu setting.
 class CreateSerialPanel(bpy.types.Panel):
@@ -137,13 +92,6 @@ class CreateSerialPanel(bpy.types.Panel):
 		row.label("Read Until")
 		row.prop(scene, "serial_read_until")
 
-		#No need for box at this time
-		#box = layout.box()
-		#box.label("Box menu")
-		#box.operator("object.select_all").action = 'TOGGLE' # Select all button.
-		#box.operator("object.select_random") # Random select button.
-		# Execute button for CreateSerial.
-		
 		txt = "Stop Serial"
 		icn = "PAUSE"	
 		if bpy.context.scene.isSerialConnected == False:
@@ -156,13 +104,42 @@ class CreateSerialPanel(bpy.types.Panel):
 		#layout.operator(CreateSerial.bl_idname, text=txt, icon=icon)
 		#layout.operator(StopSerial.bl_idname)
 
-# def toggleSerialConnection():
-# 	scn = bpy.context.scene
-# 	if(scn.isSerialConnected == False):
-# 		scn.isSerialConnected = True
-# 	else:
-# 		scn.isSerialConnected = False
 
+class SerialDataThread(threading.Thread):
+
+	def __init__(self, name='SerialDataThread'):
+		print("Starting SDT")
+		self._stopevent = threading.Event()
+		self._sleepperiod = 1.0
+
+		threading.Thread.__init__(self, name=name)
+		print("Thread started")
+		#thread = threading.Thread(target=self.run, args=())
+
+
+	def run(self):
+		""" main control loop """
+		print("Threading started")
+
+		count = 0
+		while not self._stopevent.isSet():
+			count += 1
+			print (count)
+			self._stopevent.wait(self._sleepperiod)
+
+		print("Thread has come to an end.")
+
+	def join(self, timeout=None):
+		""" Stop the thread. """
+		print("Asking thread to stop")
+		self._stopevent.set()
+		threading.Thread.join(self, timeout)
+
+
+
+
+
+# Set up scene-wide properties
 def initSerialProperties(scn):
 	bpy.types.Scene.serial_port = bpy.props.StringProperty(
 		name = "Serial Port",
@@ -194,20 +171,64 @@ def initSerialProperties(scn):
 		default = False
 	)
 
+	
+
+def removeSerialProperties():
+	scn = bpy.types.Scene
+	del scn.serial_port
+	del scn.serial_baud
+	del scn.serial_separator
+	del scn.serial_read_until
+	del scn.isSerialConnected
+
 
 def register():
 	initSerialProperties(bpy.context.scene)
 	bpy.utils.register_module(__name__)
 	# bpy.types.Scene~　＝　To show the input in the left tool shelf, store "bpy.props.~".
 	#   In draw() in the subclass of Panel, access the input value by "context.scene".
-	#   In execute() in the class, access the input value by "context.scene.float_input".
+	#   In execute() in the class, access the input value by "context.scene.[var]".
+	
+	### THREADING ###
+
+	# Kill any other Serial threads
+	for thread in threading.enumerate():
+		if(thread.name == "SerialDataThread"):
+			print("Existing Thread Found. Exiting.")
+			thread.join()
+
+	serialThread = SerialDataThread()
+	serialThread.start()
 
 	print("Blenduino was activated.")
+
  
+
 def unregister():
-	del bpy.types.Scene.serial_port
+	#Remove addon data
+	removeSerialProperties()
 	bpy.utils.unregister_module(__name__)
 	print("This add-on was deactivated.")
- 
+
+	serialThread.join()
+
+	
+
+#For local testing
 if __name__ == "__main__":
 	register()
+	
+	
+
+
+	#     def run(self):
+	#     	while(True):
+				# if(self.stop == True):
+				# 	return
+
+				# if(bpy.types.Scene.isSerialConnected == True):
+				# 	print ("reading")
+				# 	time.sleep(.5)
+				# else:
+				# 	print("not reading")
+				# 	time.sleep(1)
