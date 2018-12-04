@@ -6,13 +6,13 @@ bl_info = {
 	"author": "James",
 	"version": (1, 0),
 	"blender": (2, 79),
-	"location": "Object > Serial",
+	"location": "Tools > Serial",
 	"description": "Add Serial",
 	"warning": "",
 	"support": "TESTING",
 	"wiki_url": "",
 	"tracker_url": "",
-	"category": "Object"
+	"category": "Tool"
 }
 
  
@@ -67,6 +67,7 @@ class CreateSerial(bpy.types.Operator):
 		# Input after execute on the left below panel.
 		active_obj.location = active_obj.location + self.float_vector_input # 
 		'''
+		bpy.context.user_preferences.themes[0].object.create_serial = (0,1,0)
 		print("Executed CreateSerial class")
 		return {'FINISHED'}
  
@@ -80,9 +81,29 @@ class StopSerial(bpy.types.Operator):
 	 
 
 	def execute(self, context):
+		bpy.context.user_preferences.themes[0].object.create_serial = (1,0,0)
 		print("Executed Stop Serial class")
 		return {'FINISHED'}
 
+
+class ToggleSerial(bpy.types.Operator):
+
+	bl_idname = "scene.toggle_serial"  # Access the class by bpy.ops.object.create_serial.
+	bl_label = "Toggle Serial"
+	bl_description = "Toggle Serial Port"
+	bl_options = {'REGISTER', 'UNDO'}
+	 
+
+	def execute(self, context):
+		scn = bpy.context.scene
+		
+		if(scn.isSerialConnected == False):
+			scn.isSerialConnected = True
+		else:
+			scn.isSerialConnected = False
+
+		print("Toggleing Serial class")
+		return {'FINISHED'}
 
 # Menu setting.
 class CreateSerialPanel(bpy.types.Panel):
@@ -122,15 +143,27 @@ class CreateSerialPanel(bpy.types.Panel):
 		#box.operator("object.select_all").action = 'TOGGLE' # Select all button.
 		#box.operator("object.select_random") # Random select button.
 		# Execute button for CreateSerial.
+		
+		txt = "Stop Serial"
+		icn = "PAUSE"	
+		if bpy.context.scene.isSerialConnected == False:
+			txt = "Start Serial"
+			icn = "PLAY"
 
-		layout.operator(CreateSerial.bl_idname)
-		layout.operator(StopSerial.bl_idname)
- 
-def register():
-	bpy.utils.register_module(__name__)
-	# bpy.types.Scene~　＝　To show the input in the left tool shelf, store "bpy.props.~".
-	#   In draw() in the subclass of Panel, access the input value by "context.scene".
-	#   In execute() in the class, access the input value by "context.scene.float_input".
+		layout.operator(ToggleSerial.bl_idname, icon=icn, text=txt)
+		#layout.label(text= txt)
+
+		#layout.operator(CreateSerial.bl_idname, text=txt, icon=icon)
+		#layout.operator(StopSerial.bl_idname)
+
+# def toggleSerialConnection():
+# 	scn = bpy.context.scene
+# 	if(scn.isSerialConnected == False):
+# 		scn.isSerialConnected = True
+# 	else:
+# 		scn.isSerialConnected = False
+
+def initSerialProperties(scn):
 	bpy.types.Scene.serial_port = bpy.props.StringProperty(
 		name = "Serial Port",
 		description = "Set test float",
@@ -150,12 +183,26 @@ def register():
 	)
 
 	bpy.types.Scene.serial_read_until = bpy.props.StringProperty(
-		name = "Read Until character",
+		name = "Read Until Character",
 		description = "What character delimits a new data block?",
 		default = "\n"
 	)
 
-	print("This add-on was activated.")
+	bpy.types.Scene.isSerialConnected = bpy.props.BoolProperty(
+		name = "Is Serial Connected",
+		description = "Is the serial connected?",
+		default = False
+	)
+
+
+def register():
+	initSerialProperties(bpy.context.scene)
+	bpy.utils.register_module(__name__)
+	# bpy.types.Scene~　＝　To show the input in the left tool shelf, store "bpy.props.~".
+	#   In draw() in the subclass of Panel, access the input value by "context.scene".
+	#   In execute() in the class, access the input value by "context.scene.float_input".
+
+	print("Blenduino was activated.")
  
 def unregister():
 	del bpy.types.Scene.serial_port
