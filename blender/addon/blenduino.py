@@ -23,7 +23,96 @@ bl_info = {
 	"category": "Tool"
 }
 
- 
+
+
+class SerialDataThread(threading.Thread):
+
+	def __init__(self, name='SerialDataThread'):
+		print("Starting SDT")
+		self._stopevent = threading.Event()
+		self._sleepperiod = 1.0
+		self.ser = None
+		#= serial.Serial(bpy.context.scene.serial_port, bpy.context.scene.serial_baud)
+
+		try:
+			self.ser = serial.Serial( # set parameters, in fact use your own :-)
+				port= bpy.context.scene.serial_port,
+				baudrate= bpy.context.scene.serial_baud,
+				timeout=1 	#Timeout after 1 second. Prevents freezing
+				# bytesize=serial.SEVENBITS,
+				# parity=serial.PARITY_EVEN,
+				# stopbits=serial.STOPBITS_ONE
+			)
+			self.ser.isOpen() # try to open port, if possible print message and proceed with 'while True:'
+			print ("port is opened!")
+
+		except IOError: # if port is already opened, close it and open it again and print message
+			self.ser.close()
+			self.ser.open()
+			print ("port was already open, was closed and opened again!")
+
+
+		threading.Thread.__init__(self, name=name)
+		print("Thread started")
+		#thread = threading.Thread(target=self.run, args=())
+
+
+	def run(self):
+		""" main control loop """
+		
+		while not self._stopevent.isSet():
+
+			if(bpy.types.Scene.isSerialConnected == True):
+				#########################
+				### Read Serial Here ###
+				#########################
+				
+				#If serial closed, open
+				if(self.ser.isOpen() == False):
+					print("Opening Serial")
+					self.ser.open()
+
+				line = str(self.ser.readline())
+				line = line.replace("b'", "")		# Remove byte flag from incoming string
+				line = line.replace("\\r\\n'", "")	# Remove end line character
+				line = line.rstrip()
+				data = line.split(bpy.context.scene.serial_separator)
+				#print (data)
+				try:
+					data.remove("")	#Remove empty data
+				except:
+					print("No data to remove")	
+
+				# Only print data if it's the expected length
+				if(len(data) == bpy.context.scene.serial_expected_length):
+					c = 0
+					for element in data:
+						bpy.context.scene.serial_data[c]
+						print(element, end="")
+						c = c+1
+
+				#print("Reading Serial")
+				#self._stopevent.wait(0.5)
+
+			else:
+
+				#If serial open, closed
+				if(self.ser.isOpen() == True):
+					print("Closing Serial")
+					self.ser.close()
+
+				print("Waiting to activate Serial")
+				self._stopevent.wait(1)
+			
+		print("Thread has come to an end.")
+
+	def join(self, timeout=None):
+		""" Stop the thread. """
+		print("Asking thread to stop")
+		self._stopevent.set()
+		threading.Thread.join(self, timeout)
+
+
 # Operation.
 
 
@@ -33,22 +122,16 @@ class ToggleSerial(bpy.types.Operator):
 	bl_label = "Toggle Serial"
 	bl_description = "Toggle Serial Port"
 	bl_options = {'REGISTER', 'UNDO'}
-	
-
-
 
 	def execute(self, context):
-		scn = bpy.context.scene
-		print(">>> Toggleing Serial class")
-		global q
+		scn = bpy.types.Scene
+		print(">>> Toggling Serial class")
+		
 		if(scn.isSerialConnected == False):
 			scn.isSerialConnected = True
-			q.put(True)
-
+			
 		else:
 			scn.isSerialConnected = False
-			q.put(False)
-
 		
 		print(scn.isSerialConnected)
 		return {'FINISHED'}
@@ -84,8 +167,14 @@ class CreateSerialPanel(bpy.types.Panel):
 		row.prop(scene, "serial_separator")
 
 		row = layout.row()
-		row.label("Read Until")
-		row.prop(scene, "serial_read_until")
+		row.label("Expected Length")
+		row.prop(scene, "serial_expected_length")
+
+		
+
+		# row = layout.row()
+		# row.label("Read Until")
+		# row.prop(scene, "serial_read_until")
 
 		txt = "Stop Serial"
 		icn = "PAUSE"	
@@ -96,50 +185,17 @@ class CreateSerialPanel(bpy.types.Panel):
 		layout.operator(ToggleSerial.bl_idname, icon=icn, text=txt)
 		#layout.label(text= txt)
 
+		c = 0
+		for i in bpy.context.scene.serial_data:
+			row = layout.row()
+			row.label("Serial Data " + str(i) + ": " + str(bpy.context.scene.serial_data[i]))	
+			c = c+1
+			
+			#row.prop(scene, "serial_data")
+
+
 		#layout.operator(CreateSerial.bl_idname, text=txt, icon=icon)
 		#layout.operator(StopSerial.bl_idname)
-
-
-class SerialDataThread(threading.Thread):
-
-	def __init__(self, name='SerialDataThread'):
-		print("Starting SDT")
-		self._stopevent = threading.Event()
-		self._sleepperiod = 1.0
-
-		threading.Thread.__init__(self, name=name)
-		print("Thread started")
-		#thread = threading.Thread(target=self.run, args=())
-
-
-	def run(self):
-		""" main control loop """
-		state = False
-		while not self._stopevent.isSet():
-			global q
-			try:
-				state = q.get()
-			except:
-				print("No new state")
-			
-			if(state == True):
-				print("Reading Serial")
-				self._stopevent.wait(0.5)
-			elif (state == False):
-				print("Not Reading Serial")
-				self._stopevent.wait(1)
-			
-		print("Thread has come to an end.")
-
-	def join(self, timeout=None):
-		""" Stop the thread. """
-		print("Asking thread to stop")
-		self._stopevent.set()
-		threading.Thread.join(self, timeout)
-
-
-
-
 
 # Set up scene-wide properties
 def initSerialProperties(scn):
@@ -161,11 +217,15 @@ def initSerialProperties(scn):
 		default = ","
 	)
 
+	
+
+	''' Not using readuntil at the moment because using readlines() to read serial
 	bpy.types.Scene.serial_read_until = bpy.props.StringProperty(
 		name = "Read Until Character",
 		description = "What character delimits a new data block?",
 		default = "\n"
 	)
+	'''
 
 	bpy.types.Scene.isSerialConnected = bpy.props.BoolProperty(
 		name = "Is Serial Connected",
@@ -173,15 +233,29 @@ def initSerialProperties(scn):
 		default = False
 	)
 
-	
+	bpy.types.Scene.serial_expected_length = bpy.props.IntProperty(
+		name = "Expected Data Length",
+		description = "Expected length of incoming data",
+		default=9
+	)
+
+	bpy.types.Scene.serial_data = bpy.props.IntVectorProperty(
+		name = "Serial Data Array",
+		description = "What character separates your incoming data?",
+		default=(0,0,0,0,0,0,0,0),
+		size = 8
+	)
+
+
 
 def removeSerialProperties():
-	scn = bpy.types.Scene
+	scn = bpy.context.scene
 	del scn.serial_port
 	del scn.serial_baud
 	del scn.serial_separator
-	del scn.serial_read_until
+	#del scn.serial_read_until
 	del scn.isSerialConnected
+	del scn.serial_expected_length
 
 
 def register():
@@ -224,6 +298,8 @@ if __name__ == "__main__":
 
 #todo: Figure out who thread is seemingly not looping.
 
+#todo: [Big picture] implement more reliable threading (use queues?)
+
 	#     def run(self):
 	#     	while(True):
 				# if(self.stop == True):
@@ -235,3 +311,25 @@ if __name__ == "__main__":
 				# else:
 				# 	print("not reading")
 				# 	time.sleep(1)
+
+
+
+# # Set these values in window?
+# def add_driver(
+#         source, target, prop, dataPath,
+#         index = -1, negative = False, func = ''
+#     ):
+#     ''' Add driver to source prop (at index), driven by target dataPath '''
+
+#     if index != -1:
+#         d = source.driver_add( prop, index ).driver
+#     else:
+#         d = source.driver_add( prop ).driver
+
+#     v = d.variables.new()
+#     v.name                 = prop
+#     v.targets[0].id        = target
+#     v.targets[0].data_path = dataPath
+
+#     d.expression = func + "(" + v.name + ")" if func else v.name
+#     d.expression = d.expression if not negative else "-1 * " + d.expression
