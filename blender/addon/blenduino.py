@@ -31,7 +31,7 @@ class SerialDataThread(threading.Thread):
 		print("Starting SDT")
 		self._stopevent = threading.Event()
 		self._sleepperiod = 1.0
-		self.ser = None
+
 		#= serial.Serial(bpy.context.scene.serial_port, bpy.context.scene.serial_baud)
 
 		try:
@@ -87,9 +87,13 @@ class SerialDataThread(threading.Thread):
 				if(len(data) == bpy.context.scene.serial_expected_length):
 					c = 0
 					for element in data:
-						bpy.context.scene.serial_data[c]
+						bpy.context.scene.serial_data[c] = int(element)
 						print(element, end="")
+						print(" : ", end="")
+						print(bpy.context.scene.serial_data[c], end="")
+						print(" || ", end="")
 						c = c+1
+					print()
 
 				#print("Reading Serial")
 				#self._stopevent.wait(0.5)
@@ -111,9 +115,6 @@ class SerialDataThread(threading.Thread):
 		print("Asking thread to stop")
 		self._stopevent.set()
 		threading.Thread.join(self, timeout)
-
-
-# Operation.
 
 
 class ToggleSerial(bpy.types.Operator):
@@ -170,8 +171,6 @@ class CreateSerialPanel(bpy.types.Panel):
 		row.label("Expected Length")
 		row.prop(scene, "serial_expected_length")
 
-		
-
 		# row = layout.row()
 		# row.label("Read Until")
 		# row.prop(scene, "serial_read_until")
@@ -183,12 +182,12 @@ class CreateSerialPanel(bpy.types.Panel):
 			icn = "PLAY"
 
 		layout.operator(ToggleSerial.bl_idname, icon=icn, text=txt)
-		#layout.label(text= txt)
+		#layout.operator(ResetSerial.bl_idname, icon="LOOP_BACK", text="Reset Serial")
 
 		c = 0
 		for i in bpy.context.scene.serial_data:
 			row = layout.row()
-			row.label("Serial Data " + str(i) + ": " + str(bpy.context.scene.serial_data[i]))	
+			row.label("Serial Data " + str(c) + ": " + str(bpy.context.scene.serial_data[c]))	
 			c = c+1
 			
 			#row.prop(scene, "serial_data")
@@ -278,7 +277,9 @@ def register():
 
 	print("Blenduino was activated.")
 
- 
+
+
+
 
 def unregister():
 	#Remove addon data
@@ -288,7 +289,6 @@ def unregister():
 
 	serialThread.join()
 
-	
 
 #For local testing
 if __name__ == "__main__":
@@ -296,7 +296,7 @@ if __name__ == "__main__":
 	
 	
 
-#todo: Figure out who thread is seemingly not looping.
+#Todo: Update menu window on serial update.
 
 #todo: [Big picture] implement more reliable threading (use queues?)
 
@@ -333,3 +333,24 @@ if __name__ == "__main__":
 
 #     d.expression = func + "(" + v.name + ")" if func else v.name
 #     d.expression = d.expression if not negative else "-1 * " + d.expression
+
+
+
+
+# class ResetSerial(bpy.types.Operator):
+
+# 	bl_idname = "scene.reset_serial"  # Access the class by bpy.ops.object.create_serial.
+# 	bl_label = "Reset Serial"
+# 	bl_description = "Reset Serial Port"
+# 	bl_options = {'REGISTER', 'UNDO'}
+
+# 	def execute(self,context):
+
+# 		for thread in threading.enumerate():
+# 			if(thread.name == "SerialDataThread"):
+# 				print("Existing Thread Found. Exiting.")
+# 				thread.join()
+
+# 		serialThread = SerialDataThread()
+# 		serialThread.start()
+# 		return {'FINISHED'}
