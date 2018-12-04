@@ -1,8 +1,12 @@
 import serial
 import time
 import threading
+from multiprocessing import Queue
 #from multiprocessing import Process	#Better than threading - but causes trouble with blender!
 import bpy
+
+
+q = Queue()
 
 # Meta information.
 bl_info = {
@@ -22,20 +26,6 @@ bl_info = {
  
 # Operation.
 
-# class ReadSerialData(threading.Thread):
-#     """Thread class with a stop() method. The thread itself has to check
-#     regularly for the stopped() condition."""
-
-#     def __init__(self):
-#         super(StoppableThread, self).__init__()
-#         self._stop_event = threading.Event()
-
-#     def stop(self):
-#         self._stop_event.set()
-
-#     def stopped(self):
-#         return self._stop_event.is_set()
-
 
 class ToggleSerial(bpy.types.Operator):
 
@@ -46,15 +36,20 @@ class ToggleSerial(bpy.types.Operator):
 	
 
 
+
 	def execute(self, context):
 		scn = bpy.context.scene
-
+		print(">>> Toggleing Serial class")
+		global q
 		if(scn.isSerialConnected == False):
 			scn.isSerialConnected = True
+			q.put(True)
+
 		else:
 			scn.isSerialConnected = False
+			q.put(False)
 
-		print("Toggleing Serial class")
+		
 		print(scn.isSerialConnected)
 		return {'FINISHED'}
 
@@ -119,14 +114,21 @@ class SerialDataThread(threading.Thread):
 
 	def run(self):
 		""" main control loop """
-		print("Threading started")
-
-		count = 0
+		state = False
 		while not self._stopevent.isSet():
-			count += 1
-			print (count)
-			self._stopevent.wait(self._sleepperiod)
-
+			global q
+			try:
+				state = q.get()
+			except:
+				print("No new state")
+			
+			if(state == True):
+				print("Reading Serial")
+				self._stopevent.wait(0.5)
+			elif (state == False):
+				print("Not Reading Serial")
+				self._stopevent.wait(1)
+			
 		print("Thread has come to an end.")
 
 	def join(self, timeout=None):
@@ -220,6 +222,7 @@ if __name__ == "__main__":
 	
 	
 
+#todo: Figure out who thread is seemingly not looping.
 
 	#     def run(self):
 	#     	while(True):
