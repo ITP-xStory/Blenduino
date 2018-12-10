@@ -2,7 +2,6 @@ import serial
 import time
 import threading
 from multiprocessing import Queue
-#from multiprocessing import Process	#Better than threading - but causes trouble with blender!
 import bpy
 
 
@@ -29,15 +28,12 @@ class SerialDataThread(threading.Thread):
 	def __init__(self, name='SerialDataThread'):
 		print("Starting SDT")
 		self._stopevent = threading.Event()
-		self._sleepperiod = 1.0
-
-		#= serial.Serial(bpy.context.scene.serial_port, bpy.context.scene.serial_baud)
 
 		try:
-			self.ser = serial.Serial( # set parameters, in fact use your own :-)
+			self.ser = serial.Serial( # Set Serial params
 				port= bpy.context.scene.serial_port,
 				baudrate= bpy.context.scene.serial_baud,
-				timeout=1   #Timeout after 1 second. Prevents freezing
+				timeout=1		# Timeout after 1 second. Prevents freezing if no data coming in
 				# bytesize=serial.SEVENBITS,
 				# parity=serial.PARITY_EVEN,
 				# stopbits=serial.STOPBITS_ONE
@@ -45,10 +41,10 @@ class SerialDataThread(threading.Thread):
 			self.ser.isOpen() # try to open port, if possible print message and proceed with 'while True:'
 			print ("port is opened!")
 
-		except IOError: # if port is already opened, close it and open it again and print message
+		except IOError: # if port is already opened, close it, open it again and print message
 			self.ser.close()
 			self.ser.open()
-			print ("port was already open, was closed and opened again!")
+			print ("Port reset.")
 
 
 		threading.Thread.__init__(self, name=name)
@@ -72,19 +68,19 @@ class SerialDataThread(threading.Thread):
 					self.ser.open()
 				
 				line = str(self.ser.readline())
-				#print (line)
+
 				line = line.replace("b'", "")   	# Remove byte flag from incoming string
-				#print (line)
+
 				line = line.replace("\\r\\n'", "")  # Remove end line character
-				#print (line)
+
 				line = line.rstrip()
+
 				data = line.split(bpy.context.scene.serial_separator)
-				#print (data)
-				#print("\n\n")
+
+
 				try:
 					data.remove("") #Remove empty data
 				except:
-					#print("No data to remove")
 					pass
 
 				# Only print data if it's the expected length
@@ -92,12 +88,10 @@ class SerialDataThread(threading.Thread):
 					c = 0
 					for element in data:
 						bpy.context.scene.serial_data[c] = int(element)
-						print(c, end="")
-						print(" : ", end="")
-						print(bpy.context.scene.serial_data[c], end="")
-						print(" || ", end="")
+						if(bpy.context.scene.debug_serial): 
+							print(bpy.context.scene.serial_data[c], end="\t")
 						c = c+1
-					print()
+					if(bpy.context.scene.debug_serial): print()
 
 				#print("Reading Serial")
 				#self._stopevent.wait(0.5)
@@ -120,6 +114,16 @@ class SerialDataThread(threading.Thread):
 		self._stopevent.set()
 		threading.Thread.join(self, timeout)
 
+class DebugSerial(bpy.types.Operator):
+
+	bl_idname = "scene.debug_serial"  # Access the class by bpy.ops.object.create_serial.
+	bl_label = "Debug Serial"
+	bl_description = "Debug Serial in the python console"
+	bl_options = {'REGISTER', 'UNDO'}
+
+	def execute(self, context):
+		bpy.context.scene.debug_serial = not bpy.context.scene.debug_serial
+		return{'FINISHED'}
 
 class ToggleSerial(bpy.types.Operator):
 
@@ -134,9 +138,9 @@ class ToggleSerial(bpy.types.Operator):
 
 		# Kill any other Serial threads
 		for thread in threading.enumerate():
-			print("Threads detected")
+			if(bpy.context.scene.debug_serial): print("Threads detected")
 			if(thread.name == "SerialDataThread"):
-				print("Existing Thread Found. Exiting.")
+				if(bpy.context.scene.debug_serial): print("Existing Thread Found. Exiting.")
 				thread.join()
 
 		scn = bpy.types.Scene
@@ -205,7 +209,17 @@ class CreateSerialPanel(bpy.types.Panel):
 			icn = "PLAY"
 
 		layout.operator(ToggleSerial.bl_idname, icon=icn, text=txt)
-		#layout.operator(ResetSerial.bl_idname, icon="LOOP_BACK", text="Reset Serial")
+
+
+		 
+		if bpy.context.scene.debug_serial == False:
+			txt = "Turn on serial debugging"
+			icn = "LINENUMBERS_ON"
+		else:
+			txt = "Turn off serial debugging"
+			icn = "LINENUMBERS_OFF"  
+
+		layout.operator(DebugSerial.bl_idname, icon=icn, text=txt)
 
 		c = 0
 		for i in bpy.context.scene.serial_data:
@@ -239,19 +253,16 @@ def initSerialProperties():
 		default = ","
 	)
 
-	''' 
-	Not using readuntil at the moment because using readlines() to read serial
-	bpy.types.Scene.serial_read_until = bpy.props.StringProperty(
-		name = "Read Until Character",
-		description = "What character delimits a new data block?",
-		default = "\n"
-	)
-	'''
-
 	bpy.types.Scene.isSerialConnected = bpy.props.BoolProperty(
 		name = "Is Serial Connected",
 		description = "Is the serial connected?",
 		default = False
+	)
+
+	bpy.types.Scene.debug_serial = bpy.props.BoolProperty(
+		name = "Serial Debugger",
+		description = "Is the serial debugger active?",
+		default = True
 	)
 
 	bpy.types.Scene.serial_expected_length = bpy.props.IntProperty(
@@ -272,34 +283,21 @@ def removeSerialProperties():
 	del scn.serial_port
 	del scn.serial_baud
 	del scn.serial_separator
-	#del scn.serial_read_until
 	del scn.isSerialConnected
+	del scn.debug_serial
 	del scn.serial_expected_length
 
 
 def register():
-	print("Registering!")
 	initSerialProperties()
-	print("scene reg")
 	bpy.utils.register_module(__name__)
-	print("name reg")
-	# bpy.types.Scene~　＝　To show the input in the left tool shelf, store "bpy.props.~".
-	#   In draw() in the subclass of Panel, access the input value by "context.scene".
-	#   In execute() in the class, access the input value by "context.scene.[var]".
-	
-	### THREADING ###
-
-	
-
 	print("Blenduino was activated.")
 
 def unregister():
 	#Remove addon data
 	removeSerialProperties()
 	bpy.utils.unregister_module(__name__)
-	print("This add-on was deactivated.")
-
-	# serialThread.join()
+	print("Blenduino was deactivated.")
 
 #For local testing
 if __name__ == "__main__":
