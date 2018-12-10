@@ -216,8 +216,6 @@ def initSerialProperties(scn):
 		default = ","
 	)
 
-	
-
 	''' Not using readuntil at the moment because using readlines() to read serial
 	bpy.types.Scene.serial_read_until = bpy.props.StringProperty(
 		name = "Read Until Character",
@@ -277,10 +275,6 @@ def register():
 
 	print("Blenduino was activated.")
 
-
-
-
-
 def unregister():
 	#Remove addon data
 	removeSerialProperties()
@@ -294,8 +288,6 @@ def unregister():
 if __name__ == "__main__":
 	register()
 	
-	
-
 #Todo: Update menu window on serial update.
 
 #todo: [Big picture] implement more reliable threading (use queues?)
