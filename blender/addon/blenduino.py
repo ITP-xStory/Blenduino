@@ -4,8 +4,6 @@ import threading
 from multiprocessing import Queue
 import bpy
 
-
-
 # Meta information.
 bl_info = {
 	"name": "Serial Communication",
@@ -20,8 +18,6 @@ bl_info = {
 	"tracker_url": "",
 	"category": "Tool"
 }
-
-
 
 class SerialDataThread(threading.Thread):
 
@@ -67,14 +63,11 @@ class SerialDataThread(threading.Thread):
 					print("Opening Serial")
 					self.ser.open()
 				
+				# Parse serial data
 				line = str(self.ser.readline())
-
 				line = line.replace("b'", "")   	# Remove byte flag from incoming string
-
 				line = line.replace("\\r\\n'", "")  # Remove end line character
-
 				line = line.rstrip()
-
 				data = line.split(bpy.context.scene.serial_separator)
 
 
@@ -93,12 +86,10 @@ class SerialDataThread(threading.Thread):
 						c = c+1
 					if(bpy.context.scene.debug_serial): print()
 
-				#print("Reading Serial")
-				#self._stopevent.wait(0.5)
 
 			else:
 
-				#If serial open, closed
+				#If serial open, close
 				if(self.ser.isOpen() == True):
 					print("Closing Serial")
 					self.ser.close()
@@ -116,7 +107,7 @@ class SerialDataThread(threading.Thread):
 
 class DebugSerial(bpy.types.Operator):
 
-	bl_idname = "scene.debug_serial"  # Access the class by bpy.ops.object.create_serial.
+	bl_idname = "scene.debug_serial" 
 	bl_label = "Debug Serial"
 	bl_description = "Debug Serial in the python console"
 	bl_options = {'REGISTER', 'UNDO'}
@@ -127,7 +118,7 @@ class DebugSerial(bpy.types.Operator):
 
 class ToggleSerial(bpy.types.Operator):
 
-	bl_idname = "scene.toggle_serial"  # Access the class by bpy.ops.object.create_serial.
+	bl_idname = "scene.toggle_serial"  
 	bl_label = "Toggle Serial"
 	bl_description = "Toggle Serial Port"
 	bl_options = {'REGISTER', 'UNDO'}
@@ -172,7 +163,7 @@ class CreateSerialPanel(bpy.types.Panel):
 	bl_idname = "create_serial" # class ID.
 	bl_space_type = "VIEW_3D"   # Menu accessible from 3D viewport
 	bl_region_type = "TOOLS"	# Menu lives in the left tool shelf.
-	bl_category = "Serial"  	# Create new tab for Serial!
+	bl_category = "Serial"  	# Create new tab for Serial
 	bl_context = (("objectmode"))
 	 
 	# Menu and input:
@@ -184,7 +175,7 @@ class CreateSerialPanel(bpy.types.Panel):
 
 		row = layout.row()
 		row.label("Serial Port")
-		row.prop(scene, "serial_port") # Input button for bpy.types.Scene.float_input.
+		row.prop(scene, "serial_port") 
 
 		row = layout.row()
 		row.label("Baud Rate")
@@ -198,10 +189,6 @@ class CreateSerialPanel(bpy.types.Panel):
 		row.label("Expected Length")
 		row.prop(scene, "serial_expected_length")
 
-		# row = layout.row()
-		# row.label("Read Until")
-		# row.prop(scene, "serial_read_until")
-
 		txt = "Stop Serial"
 		icn = "PAUSE"   
 		if bpy.context.scene.isSerialConnected == False:
@@ -209,8 +196,6 @@ class CreateSerialPanel(bpy.types.Panel):
 			icn = "PLAY"
 
 		layout.operator(ToggleSerial.bl_idname, icon=icn, text=txt)
-
-
 		 
 		if bpy.context.scene.debug_serial == False:
 			txt = "Turn on serial debugging"
@@ -226,12 +211,7 @@ class CreateSerialPanel(bpy.types.Panel):
 			row = layout.row()
 			row.label("Serial Data " + str(c) + ": " + str(bpy.context.scene.serial_data[c]))   
 			c = c+1
-			
-			#row.prop(scene, "serial_data")
 
-
-		#layout.operator(CreateSerial.bl_idname, text=txt, icon=icon)
-		#layout.operator(StopSerial.bl_idname)
 
 # Set up scene-wide properties
 def initSerialProperties():
@@ -278,6 +258,7 @@ def initSerialProperties():
 		size = 8
 	)
 
+# Remove addon data if addon is closed.
 def removeSerialProperties():
 	scn = bpy.context.scene
 	del scn.serial_port
@@ -303,6 +284,12 @@ def unregister():
 if __name__ == "__main__":
 	register()
 	
+
+#########
+###END###
+#########
+
+
 #Todo: Update menu window on serial update.
 
 #todo: [Big picture] implement more reliable threading (use queues?)
