@@ -42,6 +42,7 @@ The data from the Serial stream can be accessed through the active 'Scene' data 
 
 1. With your object selected, open the properties panel ('*N*') 
 2. Right click on the **Z Rotation** value
+2. Right click on the **Z Rotation** value
 3. **Add Drivers > Single From Target**. Then left click on the Z Rotation. It should become highlighted.
 4. Pull open a new Editor Window, and navigate to the Graph Editor.
 5. In the menu options, change the mode from **F-Curve** to **Drivers**.
