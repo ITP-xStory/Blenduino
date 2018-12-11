@@ -33,17 +33,13 @@ Processing's Serial library and Chris Coleman's Maxduino project do similar thin
 1. **Relevant Content:** The weeks covering version control and licensing stand out as the most relevant to how I've structured my project. The licensing around Blender is such a core part of the tool that I wanted to stay in the spirit of things with the addon.
 
 2. **Technicals:** The Blenderside add-on is written in python, Blender's scripting language
-The first hurdle to overcome was Serial being a blocking function and causing Blender to freeze. I found that python's **threading library** is a good solution to this problem, although it took me some time to wrap my head around what was going on. 
-
-The python thread that handles Serial is activated and deactivated within the Blender User Interface, which is made possible by blender's python API. Using the API I can create new panels based off the UI theme. There was some discussion with Michael about how the user would interact with the data - in a UI panel, within a new blender object, using nodes - and I settled on a separate discreet panel. Michael suggest I look at what others have done, so I drew on the UI for the OSC addon in Blender.
+The first hurdle to overcome was Serial being a blocking function and causing Blender to freeze. I found that python's **threading library** is a good solution to this problem, although it took me some time to wrap my head around what was going on. <br/><br/>The python thread that handles Serial is activated and deactivated within the Blender User Interface, which is made possible by blender's python API. Using the API I can create new panels based off the UI theme. There was some discussion with Michael about how the user would interact with the data - in a UI panel, within a new blender object, using nodes - and I settled on a separate discreet panel. Michael suggest I look at what others have done, so I drew on the UI for the OSC addon in Blender.
 
 3. **Challenges:** Learning the structure of Blender's API took a while; even though there is abundant documentation the leap from beginner example to what I wanted to do felt a bit steep. Getting python threading to play nice with Blender's API was a bit of a technical challenge, since the API restricts certain behaviours on initialisation.
 
 4. **Timeline:** Wrapping my head around Blender's API took a bit longer than I expected, which pushed my timeline back a bit. I had hoped to get started on an Arduino library as well, but that has been taken off the immediate todo list. Since the process simply involves sending some data out via serial on the Arduino side, I don't think it's necessary to have a library for that - in fact it might be restrictive.
 
-5. The biggest personal success for me surprisingly was becoming familiar with the Blender API. I feel like I am much more comfortable with the inner workings of the program now, which is a huge surprise bonus from this project.
-
-What I regret is not more actively searching out for a community in the very early stages. I felt restricted by lack of any sort of viable product; I find it difficult to express what I'm doing without immediately sounding like I'm justifying the project.
+5. The biggest personal success for me surprisingly was becoming familiar with the Blender API. I feel like I am much more comfortable with the inner workings of the program now, which is a huge surprise bonus from this project.<br/><br/>What I regret is not more actively searching out for a community in the very early stages. I felt restricted by lack of any sort of viable product; I find it difficult to express what I'm doing without immediately sounding like I'm justifying the project.
 
 ## Accessibility
 
