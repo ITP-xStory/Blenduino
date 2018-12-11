@@ -26,6 +26,6 @@ Creates a new thread to read the Serial stream. Current implementation also pars
 Toggles a serial monitor in the python console
 
 ## Helpful Resources
-[Python 3.6.4 documentation](https://www.python.org/downloads/release/python-364/)
-[Blender Python API docs](https://docs.blender.org/api/current/)
-[Arduino Serial docs](https://www.arduino.cc/reference/en/language/functions/communication/serial/)
+-[Python 3.6.4 documentation](https://www.python.org/downloads/release/python-364/)
+- [Blender Python API docs](https://docs.blender.org/api/current/)
+- [Arduino Serial docs](https://www.arduino.cc/reference/en/language/functions/communication/serial/)
