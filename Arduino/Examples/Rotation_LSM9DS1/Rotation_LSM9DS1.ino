@@ -76,9 +76,10 @@ LSM9DS1 imu;
 ////////////////////////////
 // Sketch Output Settings //
 ////////////////////////////
-#define PRINT_CALCULATED
+#define PRINT_BLENDUINO
+//#define PRINT_CALCULATED
 //#define PRINT_RAW
-#define PRINT_SPEED 250 // 250 ms between prints
+#define PRINT_SPEED 33 // 33 ms between prints ~ 30 fps
 static unsigned long lastPrint = 0; // Keep track of print time
 
 // Earth's magnetic field varies by location. Add or subtract 
@@ -141,16 +142,16 @@ void loop()
   
   if ((lastPrint + PRINT_SPEED) < millis())
   {
-    printGyro();  // Print "G: gx, gy, gz"
-    printAccel(); // Print "A: ax, ay, az"
-    printMag();   // Print "M: mx, my, mz"
+    //printGyro();  // Print "G: gx, gy, gz"
+    //printAccel(); // Print "A: ax, ay, az"
+    //printMag();   // Print "M: mx, my, mz"
     // Print the heading and orientation for fun!
     // Call print attitude. The LSM9DS1's mag x and y
     // axes are opposite to the accelerometer, so my, mx are
     // substituted for each other.
     printAttitude(imu.ax, imu.ay, imu.az, 
                  -imu.my, -imu.mx, imu.mz);
-    Serial.println();
+    //Serial.println();
     
     lastPrint = millis(); // Update lastPrint time
   }
@@ -255,9 +256,9 @@ void printAttitude(float ax, float ay, float az, float mx, float my, float mz)
   pitch *= 180.0 / PI;
   roll  *= 180.0 / PI;
   
-  Serial.print("Pitch, Roll: ");
-  Serial.print(pitch, 2);
-  Serial.print(", ");
-  Serial.println(roll, 2);
-  Serial.print("Heading: "); Serial.println(heading, 2);
+  Serial.print(pitch,0);
+  Serial.print(",");
+  Serial.print(roll, 0);
+  Serial.print(",");
+  Serial.println(heading, 0);
 }
