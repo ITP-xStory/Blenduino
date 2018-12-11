@@ -6,7 +6,7 @@ import bpy
 
 # Meta information.
 bl_info = {
-	"name": "Serial Communication",
+	"name": "Blenduino",
 	"author": "James",
 	"version": (1, 0),
 	"blender": (2, 79),
