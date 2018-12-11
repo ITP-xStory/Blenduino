@@ -13,4 +13,4 @@ Blenduino welcomes contributions! Please be aware of the following:
 - Specific notes on contributing can be found in [CONTRIBUTING](https://github.com/jameshosken/Blenduino/blob/master/CONTRIBUTING.md)
 
 ## Reflections
-Blenduino was developed as part of an Open Source Studio at ITP. Find the [final presentation notes](https://github.com/jameshosken/Blenduino/blob/master/Presentation.md) here.
+Blenduino was developed as part of Open Source Studio at ITP. Find the [final presentation notes](https://github.com/jameshosken/Blenduino/blob/master/Presentation.md) here.

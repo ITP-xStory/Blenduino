@@ -6,6 +6,7 @@ Blenduino is an almost-plug-and-play addon for Blender that facilitates easy acc
 
 ## People
 Project Creator: James Hosken
+
 Project Mentor: Michael Shiloh
 
 ## The Deliverable
@@ -27,8 +28,6 @@ As mentioned above, Blenduino is not necessarily a robust system. I wanted to ma
 A mantra I hear at ITP a lot is 'build something you would use.' Blenduino allows me to explore ways to bring in camera information into Blender in real time, hopefully adding a new tool to the Visual Effects pipeline.
 
 Processing's Serial library and Chris Coleman's Maxduino project do similar things to Blenduino, although on a larger and more robust scale. 
-
--------References?----------
 
 ## Implementation
 1. **Relevant Content:** The weeks covering version control and licensing stand out as the most relevant to how I've structured my project. The licensing around Blender is such a core part of the tool that I wanted to stay in the spirit of things with the addon.
@@ -52,7 +51,13 @@ I do not yet have a website for the project, but I can imagine that there are go
 
 ## Mentoring
 
-_Who did you receive help and mentorship from? What was most useful to you during this process?_
+Michael, the mentor for this project, was very helpful in a few significant ways:
+
+1. UI: I was struggling with how to present the incoming data to the user in a meaningful way. Mishael and I had a conversation about several different options and he suggested finding similar Blender addons and seeing how they handle this issue. This conversation led to the way that Blenduino is currently presented, as a tool in the Blender tool shelf.
+2. Documentation: Michael had a great suggestion of structuring my documentation as if I were leading a workshop. Not only would this give me a solid place to start, but if I ever do present Blenduino to a group I'll already have an outline!
+3. Marketing: Very forward looking, Michael suggested some conferences and workshops to think about as I continue with Blenduino.
+
+I also met with Shawn van Every who gave some great suggestions regarding serial communication, and how I could implement a more efficient data stream. For this version I've decided to stick with the current implementation (it works as a prototype), but they are good notes for moving forward. 
 
 ## Longer-Term Goals
 
