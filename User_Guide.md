@@ -67,3 +67,12 @@ Toggles the Serial connection.
 ### Serial Debugging
 Toggle printing incoming serial data to the python console
 
+---
+
+## Known Bugs
+
+*Please feel free to report any bugs by opening an issue on this repo!*
+
+1. You need to press the "Start Serial" button twice to actually start the serial connection.
+
+
