@@ -17,10 +17,10 @@
 
   * MODIFIED: *
   * 
-  * reads a string of numbers, converts to integers, and 
-  * blinks and LED based on the first number. 
+  * reads an a number (as a string), converts to integer, and 
+  * blinks and LED based on the number. 
   * 
-  * Very rough code, expects 3 incoming numbers as strings, separated by ','
+  * Very rough code, expects a single int as a string, with a newline character at the end.
   * 
   * Modified 05 Jan 2019
   * for Blenduino
