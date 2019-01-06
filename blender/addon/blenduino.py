@@ -47,18 +47,17 @@ class SerialDataThread(threading.Thread):
 		print("Thread started")
 		#thread = threading.Thread(target=self.run, args=())
 
-
 	def run(self):
+
 		""" main control loop """
-		
 		while not self._stopevent.isSet():
 
 			if(bpy.types.Scene.isSerialConnected == True):
-				#########################
+				########################
 				### Read Serial Here ###
-				#########################
+				########################
 				
-				#If serial closed, open
+				#If serial closed, open it
 				if(self.ser.isOpen() == False):
 					print("Opening Serial")
 					self.ser.open()
@@ -68,7 +67,7 @@ class SerialDataThread(threading.Thread):
 				line = line.replace("b'", "")   	# Remove byte flag from incoming string
 				line = line.replace("\\r\\n'", "")  # Remove end line character
 				line = line.rstrip()
-				data = line.split(bpy.context.scene.serial_separator)
+				data = line.split(bpy.context.scene.serial_separator)	# Split by the user-defined character
 
 
 				try:
@@ -76,7 +75,7 @@ class SerialDataThread(threading.Thread):
 				except:
 					pass
 
-				# Only print data if it's the expected length
+				# Only print/use data if it's the expected length
 				if(len(data) == bpy.context.scene.serial_expected_length):
 					c = 0
 					for element in data:
@@ -85,6 +84,24 @@ class SerialDataThread(threading.Thread):
 							print(bpy.context.scene.serial_data[c], end="\t")
 						c = c+1
 					if(bpy.context.scene.debug_serial): print()
+
+				#########################
+				### Write Serial Here ###
+				#########################
+
+				output = str(bpy.context.scene.serial_write_data)
+
+				#Old array code
+				# for value in bpy.context.scene.serial_write_data:
+				# 	output += str(value) 
+				# 	output += bpy.context.scene.serial_separator
+
+				output += '\n'
+				output = output.encode('utf-8') # Remove last separator character.
+
+				print("Writing Serial: " + str(output))
+				self.ser.write(output)  # Encoding mandated by pySerial docs: https://pythonhosted.org/pyserial/pyserial_api.html?highlight=write#serial.Serial.write
+				
 
 
 			else:
@@ -155,8 +172,6 @@ class ToggleSerial(bpy.types.Operator):
 		print(scn.isSerialConnected)
 		return {'FINISHED'}
 
-
-
 # Menu setting.
 class CreateSerialPanel(bpy.types.Panel):
 	bl_label = "CREATE Serial"
@@ -206,11 +221,19 @@ class CreateSerialPanel(bpy.types.Panel):
 
 		layout.operator(DebugSerial.bl_idname, icon=icn, text=txt)
 
-		c = 0
+		# Panel to Serial Write data (controllable via drivers)
+		row = layout.row()
+		row.label("Data to Write")
+		row.prop(scene, "serial_write_data")  
+
+		c_read = 0
 		for i in bpy.context.scene.serial_data:
 			row = layout.row()
-			row.label("Serial Data " + str(c) + ": " + str(bpy.context.scene.serial_data[c]))   
-			c = c+1
+			row.label("Serial Data " + str(c_read) + ": " + str(bpy.context.scene.serial_data[c_read]))   
+			c_read = c_read+1
+
+
+			
 
 
 # Set up scene-wide properties
@@ -251,11 +274,18 @@ def initSerialProperties():
 		default=9
 	)
 
+	# Todo rename to serial_read_data
 	bpy.types.Scene.serial_data = bpy.props.IntVectorProperty(
 		name = "Serial Data Array",
 		description = "What character separates your incoming data?",
 		default=(0,0,0,0,0,0,0,0),
 		size = 8
+	)
+
+	bpy.types.Scene.serial_write_data = bpy.props.IntProperty(
+		name = "Serial Write Array",
+		description = "The outgoing data. For now just 1 int",
+		default = 0
 	)
 
 # Remove addon data if addon is closed.
@@ -267,7 +297,8 @@ def removeSerialProperties():
 	del scn.isSerialConnected
 	del scn.debug_serial
 	del scn.serial_expected_length
-
+	del scn.serial_data
+	del scn.serial_write_data
 
 def register():
 	initSerialProperties()
