@@ -6,7 +6,7 @@ Getting things from Arduino to Blender and back
 Blenduino is an almost-plug-and-play addon for Blender that facilitates easy access to a serial data stream. Bringing information from the physical world into a virtual 3D environment has many potential applications, from experimental new interfaces for 3D modelling and animation to immersive interactive experiences that blend the real and the virtual. Blenduino is not intended to be a robust production system, rather an easy way to get started experimenting!
 
 ## Getting Started
-Ready to get started? See the [User Guide](https://github.com/jameshosken/Blenduino/blob/master/User_Guide.md) for how to get started!
+Ready to get started? See the [User Guide](https://github.com/jameshosken/Blenduino/blob/master/User_Guide.md) for a brief walkthrough!
 
 ## Contributing
 Blenduino welcomes contributions! Please be aware of the following:
