@@ -20,6 +20,6 @@ To view what's next, see the [roadmap](https://github.com/jameshosken/Blenduino/
 In the spirit of Blender's open source nature, Blenduino is released with no warranty under [GPL v2](https://github.com/jameshosken/Blenduino/blob/master/LICENSE.md) 
 
 ## Reflections
-Blenduino was developed as part of Open Source Studio at ITP. Find the [final presentation notes](https://github.com/jameshosken/Blenduino/blob/master/Presentation.md) here.
+Blenduino is developed with support from [ITP xStories](https://www.itpxstory.com/), and was first created during the class Open Source Studio at ITP. Find the [final presentation notes](https://github.com/jameshosken/Blenduino/blob/master/Presentation.md) here.
 
 
