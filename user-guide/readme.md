@@ -46,7 +46,7 @@ Now you can exit User Preferences. There should be a new tab in your Tool Shelf 
 
 ![Serial Tab](img/006-serial-tab.JPG?raw=true "Serial Tab")
 
-The Serial tab exposes all the options you need to open a Serial port and listen for incoming data from an Arduino. For more on the settings, see [definitions](definitions.md).
+The Serial tab exposes all the options you need to open a Serial port and listen for incoming data from an Arduino. For more on the settings, see [Serial definitions](serial-definitions.md).
 
 ![Serial Setting](img/007-settings.JPG?raw=true "Serial Settings")
 
