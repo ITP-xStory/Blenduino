@@ -30,6 +30,8 @@ Point the file explorer to the Blenduino repo. Select the **blenduino.py** file 
 
 Back in the **Add-on** tab, select **Testing** under Supported Level, and **User** under Categories. Then check the box next to **Tool: Blenduino** to activate the Add-on. Don't forget to **Save User Settings**.
 
+![Add-on Settings](img/005-install-testing.JPG?raw=true "Add-on Settings")
+
 Still in **User Preferences**, navigate to the **File** tab, and make sure **Auto Run Python Scripts** is checked. This ensures that we are able to customise our drivers later on. Don't forget to **Save User Settings**.
 
 ![Auto Run](img/005-auto-execute.JPG?raw=true "Auto Run")
