@@ -2,10 +2,14 @@
 
 ## Overview
 
-Blenduino is an almost-plug-and-play solution for connection you Arduino (or other microcontroller!) to Blender, via Serial. This guide assumes that you are vaguely familiar with Ardunio Serial communication and comfortable with Blender (knowing what "Driver" and "Driven" mean will help).
+Blenduino is an almost-plug-and-play solution for connection you Arduino (or other microcontroller!) to Blender, via Serial. This guide assumes that you are vaguely familiar with Ardunio Serial communication and comfortable with Blender (knowing what a [Driver](https://docs.blender.org/manual/en/dev/animation/drivers/index.html) is will help).
+
+---
 
 ## Setting up Python
 Blender runs its own installation of python so there's a tiny amount of frontloading to get the Serial library to play nice. [This guide](http://www.codeplastic.com/2019/03/12/how-to-install-python-modules-in-blender/) walks through how to install modules in Blender's python. The only change you need to make is in step 3 install '**pyserial**' instead of '**scikit-image**'
+
+---
 
 ## Installing the Blender Addon
 Once you have installed python Serial as shown above, follow these steps to set up the Blenduino add on:
@@ -82,6 +86,6 @@ Within the Ardunio directory of this repo is a demo of how to send data from an 
 
 Similarly to above, the data in the scene context at **serial_write_data** is what is written out to Serial. 
 
-The data can be accessed via the Serial tool panel, under the line item **Data to Write**. Add a driver here to control this data.
+The data can be accessed via the Serial tool panel, under the line item **Data to Write**. Add a driver here to control this data. Note that the data sent is an **integer**. All floats will be floored.
 
 Within the Ardunio directory of this repo is a demo of how to read the data from Blender, called **Simple_Read_Test**
