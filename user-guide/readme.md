@@ -2,7 +2,7 @@
 
 ## Overview
 
-Blenduino is an almost-plug-and-play solution for connection you Arduino (or other microcontroller!) to Blender, via Serial. This guide assumes that you are vaguely familiar with Ardunio Serial communication and comfortable with Blender (knowing what a [Driver](https://docs.blender.org/manual/en/dev/animation/drivers/index.html) is will help).
+Blenduino is an almost-plug-and-play solution for connection an Arduino (or other microcontroller!) to Blender, via Serial. This guide assumes that you are vaguely familiar with Ardunio Serial communication and comfortable with Blender (knowing what a [Driver](https://docs.blender.org/manual/en/dev/animation/drivers/index.html) is will help).
 
 ---
 
