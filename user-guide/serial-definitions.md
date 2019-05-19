@@ -1,4 +1,4 @@
-# Definitions
+# Serial Definitions
 
 ## Serial Port
 The port your Arduino is connecting to. You can find this in the Arduino IDE under the "**Tools**" drop-down menu
