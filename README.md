@@ -8,7 +8,7 @@ Blenduino is an almost-plug-and-play addon for Blender that facilitates easy acc
 [Here's a demo of Blenduino in use!](https://youtu.be/l9xVGFIXgF4)
 
 ## Getting Started
-Ready to get started? See the [User Guide](user-guide/user-guide.md) for a brief walkthrough!
+Ready to get started? See the [User Guide](user-guide/readme.md) for a brief walkthrough!
 
 ## Contributing
 Blenduino welcomes contributions! Please be aware of the following:
