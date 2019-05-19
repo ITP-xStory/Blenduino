@@ -22,7 +22,7 @@
   * 
   * Very rough code, expects a single int as a string, with a newline character at the end.
   * 
-  * Modified 05 Jan 2019
+  * Modified Jan 2019
   * for Blenduino
   * by James Hosken
   

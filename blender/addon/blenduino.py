@@ -90,18 +90,9 @@ class SerialDataThread(threading.Thread):
 				#########################
 
 				output = str(bpy.context.scene.serial_write_data)
-
-				#Old array code
-				# for value in bpy.context.scene.serial_write_data:
-				# 	output += str(value) 
-				# 	output += bpy.context.scene.serial_separator
-
-				output += '\n'
-				output = output.encode('utf-8') # Remove last separator character.
-
-				print("Writing Serial: " + str(output))
-				self.ser.write(output)  # Encoding mandated by pySerial docs: https://pythonhosted.org/pyserial/pyserial_api.html?highlight=write#serial.Serial.write
-				
+				output += '\n'					#newline for arduino
+				output = output.encode('utf-8') # Encoding mandated by pySerial docs: https://pythonhosted.org/pyserial/pyserial_api.html?highlight=write#serial.Serial.write
+				self.ser.write(output)  
 
 
 			else:
@@ -226,11 +217,11 @@ class CreateSerialPanel(bpy.types.Panel):
 		row.label("Data to Write")
 		row.prop(scene, "serial_write_data")  
 
-		c_read = 0
-		for i in bpy.context.scene.serial_data:
-			row = layout.row()
-			row.label("Serial Data " + str(c_read) + ": " + str(bpy.context.scene.serial_data[c_read]))   
-			c_read = c_read+1
+		# c_read = 0
+		# for i in bpy.context.scene.serial_data:
+		# 	row = layout.row()
+		# 	row.label("Serial Data " + str(c_read) + ": " + str(bpy.context.scene.serial_data[c_read]))   
+		# 	c_read = c_read+1
 
 
 			
