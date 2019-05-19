@@ -16,7 +16,7 @@ The number of data points you are sending from the Arduino. The default is 8, ma
 Toggles the Serial connection. 
 
 ## Serial Debugging
-Toggle printing incoming serial data to the python console
+Toggle printing incoming serial data to Blender's python console
 
 
 
